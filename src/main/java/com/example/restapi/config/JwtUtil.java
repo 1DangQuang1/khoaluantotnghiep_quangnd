@@ -2,24 +2,27 @@ package com.example.restapi.config;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+
+import java.security.Key;
 import java.util.Date;
+
 
 import com.example.restapi.model.User;
 
-
 @Component
 public class JwtUtil {
+    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
 
-    private final String SECRET_KEY = "emr_login_123";
-
+    
     public String generate(User user) {
         return Jwts.builder()
                 .setSubject(user.getUsername())
                 .claim("role", user.getRole())
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) 
-                .signWith(SignatureAlgorithm.HS256, SECRET_KEY)
+                .setExpiration(new Date(System.currentTimeMillis() + 3600000)) // 1h
+                .signWith(key)
                 .compact();
     }
 }
