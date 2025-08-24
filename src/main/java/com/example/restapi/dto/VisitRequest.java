@@ -1,0 +1,23 @@
+package com.example.restapi.dto;
+
+import com.example.restapi.model.Visit;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+
+@Data
+public class VisitRequest {
+
+    @NotBlank(message = "Patient CCCD is required")
+    private String patientCccd;
+
+    @NotNull(message = "Department ID is required")
+    private Long departmentId;
+
+    @NotNull(message = "Shift is required")
+    private Integer shift;
+
+    private String reason;     
+    private Integer priorityLevel; 
+}

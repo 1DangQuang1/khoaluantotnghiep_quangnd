@@ -1,11 +1,12 @@
 package com.example.restapi.controller;
 
-import com.example.restapi.dto.PatientRequest;
-import com.example.restapi.dto.PatientResponse;
-import com.example.restapi.service.PatientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import com.example.restapi.dto.PatientRequest;
+import com.example.restapi.dto.PatientResponse;
+import com.example.restapi.service.PatientService;
 
 import java.util.List;
 
