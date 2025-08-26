@@ -13,7 +13,7 @@ import lombok.Data;
 @Builder
 public class VisitResponse {
 
-    private UUID id;
+    private Long id;
     private LocalDate visitDate;
     private Integer shift;
     private Visit.VisitStatus status;
@@ -23,9 +23,9 @@ public class VisitResponse {
     private Long patientId;
     private String patientCccd;
 
-    private UUID doctorId;
+    private Long doctorId;
     private Long departmentId;
-    private UUID roomId;
+    private Long roomId;
 
     private Integer lockVersion;
     private LocalDateTime createdAt;

@@ -2,8 +2,6 @@ package com.example.restapi.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
-
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,9 +30,8 @@ import lombok.Setter;
 public class Visit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID) 
-    @Column(updatable = false, nullable = false)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "visit_date", nullable = false)
     private LocalDate visitDate;
@@ -60,13 +57,13 @@ public class Visit {
     private String patientCccd;
 
     @Column(name = "doctor_id")
-    private UUID doctorId;
+    private Long doctorId;
 
     @Column(name = "department_id")
     private Long departmentId;
 
     @Column(name = "room_id")
-    private UUID roomId;
+    private Long roomId;
 
     @Version
     @Column(name = "lock_version")

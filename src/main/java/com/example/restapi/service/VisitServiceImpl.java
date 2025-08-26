@@ -3,7 +3,6 @@ package com.example.restapi.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,7 +73,7 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public VisitResponse getVisit(UUID visitId) {
+    public VisitResponse getVisit(Long visitId) {
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new VisitNotFoundException("Visit not found with id " + visitId));
         return VisitResponse.fromEntity(visit);
@@ -82,7 +81,7 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     @Transactional
-    public VisitResponse updateStatus(UUID visitId, Visit.VisitStatus newStatus, Integer lockVersion) {
+    public VisitResponse updateStatus(Long visitId, Visit.VisitStatus newStatus, Integer lockVersion) {
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new VisitNotFoundException("Visit not found with id " + visitId));
 
@@ -98,7 +97,7 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     @Transactional
-    public VisitResponse assignDoctor(UUID visitId, UUID doctorId, UUID roomId) {
+    public VisitResponse assignDoctor(Long visitId, Long doctorId, Long roomId) {
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new VisitNotFoundException("Visit not found with id " + visitId));
 
@@ -110,17 +109,30 @@ public class VisitServiceImpl implements VisitService {
         return VisitResponse.fromEntity(visitRepository.save(visit));
     }
 
+
     @Override
     @Transactional
-    public void cancelVisit(UUID visitId, String reason) {
-        Visit visit = visitRepository.findById(visitId)
-                .orElseThrow(() -> new VisitNotFoundException("Visit not found with id " + visitId));
-
+    public void cancelVisit(Long visitId, String cccd, String reason) {
+        Visit visit;
+    
+        if (visitId != null) {
+            visit = visitRepository.findById(visitId)
+                    .orElseThrow(() -> new VisitNotFoundException("Visit not found with id " + visitId));
+        } else if (cccd != null) {
+            Patient patient = patientRepository.findByCccd(cccd)
+                    .orElseThrow(() -> new PatientNotFoundException("Patient not found with CCCD " + cccd));
+    
+            visit = visitRepository.findTopByPatientIdOrderByCreatedAtDesc(patient.getId())
+                    .orElseThrow(() -> new VisitNotFoundException("No visits found for patient with CCCD " + cccd));
+        } else {
+            throw new IllegalArgumentException("Either visitId or cccd must be provided");
+        }
+    
         visit.setStatus(Visit.VisitStatus.CANCELLED);
         visit.setUpdatedAt(LocalDateTime.now());
-
+    
         visitRepository.save(visit);
-        logger.info("Visit {} cancelled, reason={}", visitId, reason);
+        logger.info("Visit {} cancelled, reason={}, cccd={}", visit.getId(), reason, cccd);
     }
 
     @Override
@@ -133,4 +145,6 @@ public class VisitServiceImpl implements VisitService {
 
         return VisitResponse.fromEntity(visit);
     }
+
+
 }

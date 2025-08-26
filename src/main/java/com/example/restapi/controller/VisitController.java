@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/visits")
@@ -35,13 +34,13 @@ public class VisitController {
     }
 
     @GetMapping("/{visitId}")
-    public ResponseEntity<VisitResponse> getVisit(@PathVariable UUID visitId) {
+    public ResponseEntity<VisitResponse> getVisit(@PathVariable Long visitId) {
         return ResponseEntity.ok(visitService.getVisit(visitId));
     }
 
     @PutMapping("/{visitId}/status")
     public ResponseEntity<VisitResponse> updateStatus(
-            @PathVariable UUID visitId,
+            @PathVariable Long visitId,
             @RequestParam Visit.VisitStatus status,
             @RequestParam(required = false) Integer lockVersion) {
         return ResponseEntity.ok(visitService.updateStatus(visitId, status, lockVersion));
@@ -49,17 +48,20 @@ public class VisitController {
 
     @PutMapping("/{visitId}/assign")
     public ResponseEntity<VisitResponse> assignDoctor(
-            @PathVariable UUID visitId,
-            @RequestParam UUID doctorId,
-            @RequestParam UUID roomId) {
+            @PathVariable Long visitId,
+            @RequestParam Long doctorId,
+            @RequestParam Long roomId) {
         return ResponseEntity.ok(visitService.assignDoctor(visitId, doctorId, roomId));
     }
 
-    @DeleteMapping("/{visitId}")
-    public ResponseEntity<Void> cancelVisit(@PathVariable UUID visitId, @RequestParam String reason) {
-        visitService.cancelVisit(visitId, reason);
+    @DeleteMapping("/cancel")
+    public ResponseEntity<Void> cancelVisit(@RequestParam(required = false) Long visitId,
+                                            @RequestParam(required = false) String cccd,
+                                            @RequestParam String reason) {
+        visitService.cancelVisit(visitId, cccd, reason);
         return ResponseEntity.noContent().build();
     }
+    
 
     @GetMapping("/patient/{cccd}")
     public ResponseEntity<VisitResponse> getVisitByPatientCccd(@PathVariable String cccd) {
