@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.restapi.dto.PatientRequest;
 import com.example.restapi.dto.PatientResponse;
-import com.example.restapi.exceptions.DuplicateCccdException;
+import com.example.restapi.exceptions.DuplicateException;
 import com.example.restapi.model.Insurance;
 import com.example.restapi.model.Patient;
 import com.example.restapi.repository.PatientRepository;
@@ -25,7 +25,7 @@ public class PatientService {
         try {
             return patientRepository.save(patient);
         } catch (DataIntegrityViolationException ex) {
-            throw new DuplicateCccdException("CCCD already exists: " + patient.getCccd());
+            throw new DuplicateException("CCCD already exists: " + patient.getCccd());
         }
     }
 

@@ -4,32 +4,36 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.example.restapi.exceptions.DuplicateException;
 import com.example.restapi.exceptions.RecordNotFoundException;
-import com.example.restapi.model.LabResult;
-import com.example.restapi.repository.LabResultRepository;
+import com.example.restapi.model.LabRecord;
+import com.example.restapi.repository.LabRecordRepository;
 
 @Service
-public class LabResultService {
+public class LabRecordService {
 
-    private final LabResultRepository labResultRepository;
+    private final LabRecordRepository labResultRepository;
 
-    public LabResultService(LabResultRepository labResultRepository) {
+    public LabRecordService(LabRecordRepository labResultRepository) {
         this.labResultRepository = labResultRepository;
     }
 
-    public LabResult createLabResult(Long visitId, LabResult labResult) {
+    public LabRecord createLabResult(Long visitId, LabRecord labResult) {
+        if (labResultRepository.findByVisitId(visitId).isPresent()) {
+            throw new DuplicateException("Record already exists for this visit");
+        }
         labResult.setId(null);
         labResult.setVisitId(visitId);
         return labResultRepository.save(labResult);
     }
 
-    public LabResult getLabResults(Long visitId) {
+    public LabRecord getLabResults(Long visitId) {
         return labResultRepository.findByVisitId(visitId)
             .orElseThrow(() -> new RecordNotFoundException("Lab result not found with visitId: " + visitId));
     }
 
-    public LabResult updateLabResult(Long visitId, LabResult update) {
-        return ((Optional<LabResult>) labResultRepository.findByVisitId(visitId))
+    public LabRecord updateLabResult(Long visitId, LabRecord update) {
+        return ((Optional<LabRecord>) labResultRepository.findByVisitId(visitId))
                 .map(existing -> {
                     existing.setType(update.getType());
                     existing.setPerformedDate(update.getPerformedDate());

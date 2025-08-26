@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.restapi.dto.CancelRequest;
 import com.example.restapi.dto.VisitRequest;
 import com.example.restapi.dto.VisitResponse;
 import com.example.restapi.model.Visit;
@@ -46,13 +47,6 @@ public class VisitController {
         return ResponseEntity.ok(visitService.getVisit(visitId));
     }
 
-    @PutMapping("/{visitId}/status")
-    public ResponseEntity<VisitResponse> updateStatus(
-            @PathVariable Long visitId,
-            @RequestParam Visit.VisitStatus status,
-            @RequestParam(required = false) Integer lockVersion) {
-        return ResponseEntity.ok(visitService.updateStatus(visitId, status, lockVersion));
-    }
 
     @PutMapping("/{visitId}/assign")
     public ResponseEntity<VisitResponse> assignDoctor(
@@ -62,11 +56,16 @@ public class VisitController {
         return ResponseEntity.ok(visitService.assignDoctor(visitId, doctorId, roomId));
     }
 
+    @PutMapping("/{visitId}/status")
+    public ResponseEntity<VisitResponse> updateStatus(
+            @PathVariable Long visitId,
+            @RequestParam Visit.VisitStatus newStatus,
+            @RequestParam Integer lockVersion) {
+        return ResponseEntity.ok(visitService.updateStatus(visitId, newStatus, lockVersion));
+    }
     @DeleteMapping("/cancel")
-    public ResponseEntity<Void> cancelVisit(@RequestParam(required = false) Long visitId,
-                                            @RequestParam(required = false) String cccd,
-                                            @RequestParam String reason) {
-        visitService.cancelVisit(visitId, cccd, reason);
+    public ResponseEntity<Void> cancelVisit(@RequestBody CancelRequest  request) {
+        visitService.cancelVisit(request.getCccd(), request.getReason());
         return ResponseEntity.noContent().build();
     }
     

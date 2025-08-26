@@ -15,9 +15,12 @@ public class VisitRequest {
     @NotNull(message = "Department ID is required")
     private Long departmentId;
 
+    @NotNull(message = "Service ID is required")
+    private Long serviceId;
+
     @NotNull(message = "Shift is required")
     private Integer shift;
 
     private String reason;     
-    private Integer priorityLevel; 
+    private Integer priorityLevel;
 }

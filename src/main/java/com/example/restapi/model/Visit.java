@@ -62,6 +62,12 @@ public class Visit {
     @Column(name = "department_id")
     private Long departmentId;
 
+    @Column(name = "cancle_reason", length = 500)
+    private String cancleReason;
+
+    @Column(name = "service_id", length = 100)
+    private Long serviceId;
+
     @Column(name = "room_id")
     private Long roomId;
 
@@ -97,6 +103,7 @@ public class Visit {
     }
 
     public enum VisitStep {
+        WAITING,
         CLINICAL,
         PARACLINICAL,
         PRESCRIPTION,

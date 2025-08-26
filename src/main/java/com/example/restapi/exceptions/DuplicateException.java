@@ -1,0 +1,7 @@
+package com.example.restapi.exceptions;
+
+public class DuplicateException extends RuntimeException {
+    public DuplicateException(String message) {
+        super(message);
+    }
+}

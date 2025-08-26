@@ -12,7 +12,8 @@ public interface VisitService {
     List<VisitResponse> listVisits(Visit.VisitStatus status, Long departmentId, LocalDate date);
     VisitResponse getVisit(Long visitId);
     VisitResponse updateStatus(Long visitId, Visit.VisitStatus newStatus, Integer lockVersion);
+    VisitResponse updateCurrentStep(Long visitId, Visit.VisitStep newStep);
     VisitResponse assignDoctor(Long visitId, Long doctorId, Long roomId);
     VisitResponse getVisitByPatientCccd(String cccd);
-    void cancelVisit(Long visitId, String cccd, String reason);
+    void cancelVisit(String cccd, String reason);
 }

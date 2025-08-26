@@ -25,6 +25,7 @@ public class VisitResponse {
 
     private Long doctorId;
     private Long departmentId;
+    private Long serviceId;
     private Long roomId;
 
     private Integer lockVersion;
@@ -43,6 +44,7 @@ public class VisitResponse {
                 .patientCccd(visit.getPatientCccd())
                 .doctorId(visit.getDoctorId())
                 .departmentId(visit.getDepartmentId())
+                .serviceId(visit.getServiceId())
                 .roomId(visit.getRoomId())
                 .lockVersion(visit.getLockVersion())
                 .createdAt(visit.getCreatedAt())

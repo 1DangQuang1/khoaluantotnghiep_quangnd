@@ -108,4 +108,6 @@ public class ClinicalRecord {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+
 }

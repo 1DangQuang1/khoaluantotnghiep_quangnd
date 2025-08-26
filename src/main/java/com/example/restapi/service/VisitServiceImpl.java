@@ -13,11 +13,12 @@ import com.example.restapi.dto.VisitRequest;
 import com.example.restapi.dto.VisitResponse;
 import com.example.restapi.exceptions.PatientNotFoundException;
 import com.example.restapi.exceptions.VisitNotFoundException;
-import com.example.restapi.exceptions.DepartmentNotFoundException;
+import com.example.restapi.exceptions.NotFoundException;
 import com.example.restapi.model.Patient;
 import com.example.restapi.model.Visit;
 import com.example.restapi.repository.DepartmentMappingRepository;
 import com.example.restapi.repository.PatientRepository;
+import com.example.restapi.repository.ServiceMappingRepository;
 import com.example.restapi.repository.VisitRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class VisitServiceImpl implements VisitService {
     private final VisitRepository visitRepository;
     private final PatientRepository patientRepository;
     private final DepartmentMappingRepository departmentMappingRepository;
+    private final ServiceMappingRepository serviceMappingRepository;
 
     @Override
     @Transactional
@@ -39,9 +41,12 @@ public class VisitServiceImpl implements VisitService {
                 .orElseThrow(() -> new PatientNotFoundException("Patient not found with CCCD " + request.getPatientCccd()));
 
         if (!departmentMappingRepository.existsByDepartmentId(request.getDepartmentId())) {
-                throw new DepartmentNotFoundException("Invalid department_id: " + request.getDepartmentId());
+                throw new NotFoundException("Invalid department_id: " + request.getDepartmentId());
         }
-                
+        
+        if (!serviceMappingRepository.existsByServiceId(request.getServiceId())) {
+                throw new NotFoundException("Invalid service_id: " + request.getServiceId());
+        }
 
         Integer queueNo = visitRepository.countByDepartmentIdAndVisitDateAndShift(
                 request.getDepartmentId(), LocalDate.now(), request.getShift()
@@ -51,11 +56,12 @@ public class VisitServiceImpl implements VisitService {
                 .visitDate(LocalDate.now())
                 .shift(request.getShift())
                 .status(Visit.VisitStatus.WAITING)
-                .currentStep(Visit.VisitStep.CLINICAL)
+                .currentStep(Visit.VisitStep.WAITING)
                 .queueNo(queueNo)
                 .patientId(patient.getId())
                 .patientCccd(patient.getCccd())
                 .departmentId(request.getDepartmentId())
+                .serviceId(request.getServiceId())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -112,27 +118,21 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     @Transactional
-    public void cancelVisit(Long visitId, String cccd, String reason) {
+    public void cancelVisit(String cccd, String reason) {
         Visit visit;
     
-        if (visitId != null) {
-            visit = visitRepository.findById(visitId)
-                    .orElseThrow(() -> new VisitNotFoundException("Visit not found with id " + visitId));
-        } else if (cccd != null) {
-            Patient patient = patientRepository.findByCccd(cccd)
-                    .orElseThrow(() -> new PatientNotFoundException("Patient not found with CCCD " + cccd));
-    
-            visit = visitRepository.findTopByPatientIdOrderByCreatedAtDesc(patient.getId())
-                    .orElseThrow(() -> new VisitNotFoundException("No visits found for patient with CCCD " + cccd));
-        } else {
-            throw new IllegalArgumentException("Either visitId or cccd must be provided");
-        }
-    
+
+        Patient patient = patientRepository.findByCccd(cccd)
+                .orElseThrow(() -> new PatientNotFoundException("Patient not found with CCCD " + cccd));
+
+        visit = visitRepository.findTopByPatientIdOrderByCreatedAtDesc(patient.getId())
+                .orElseThrow(() -> new VisitNotFoundException("No visits found for patient with CCCD " + cccd));
+
+        visit.setCancleReason(reason);
         visit.setStatus(Visit.VisitStatus.CANCELLED);
         visit.setUpdatedAt(LocalDateTime.now());
     
         visitRepository.save(visit);
-        logger.info("Visit {} cancelled, reason={}, cccd={}", visit.getId(), reason, cccd);
     }
 
     @Override
@@ -144,6 +144,16 @@ public class VisitServiceImpl implements VisitService {
                 .orElseThrow(() -> new VisitNotFoundException("No visits found for patient with CCCD " + cccd));
 
         return VisitResponse.fromEntity(visit);
+    }
+
+    @Override
+    public VisitResponse updateCurrentStep(Long visitId, Visit.VisitStep newStep ) {
+                Visit visit = visitRepository.findById(visitId)
+                        .orElseThrow(() -> new VisitNotFoundException("Visit not found with id " + visitId));
+                visit.setCurrentStep(newStep);
+                visit.setUpdatedAt(LocalDateTime.now());
+        
+                return VisitResponse.fromEntity(visitRepository.save(visit));
     }
 
 

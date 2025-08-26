@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(DuplicateCccdException.class)
-    public ResponseEntity<Map<String, Object>> handleDuplicateCccd(DuplicateCccdException ex) {
+    @ExceptionHandler(DuplicateException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateCccd(DuplicateException ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.CONFLICT.value());
-        body.put("error", "Duplicate CCCD");
+        body.put("error", "Duplicate data found");
         body.put("message", ex.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.CONFLICT);
@@ -42,8 +42,8 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
-    @ExceptionHandler(DepartmentNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleDepartmentNotFound(DepartmentNotFoundException ex) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleDepartmentNotFound(NotFoundException ex) {
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", LocalDateTime.now());
         body.put("status", HttpStatus.BAD_REQUEST.value());
