@@ -9,6 +9,5 @@ import com.example.restapi.model.LabRecord;
 
 public interface LabRecordRepository extends JpaRepository<LabRecord, Long> {
     Optional<List<LabRecord>> findByVisitId(Long visitId);
-    Optional<LabRecord> findById(Long Id);
 }
 
