@@ -1,5 +1,7 @@
 package com.example.restapi.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -26,9 +28,11 @@ public class PrescriptionItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "prescription_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "prescription_id")
+    @JsonBackReference
     private Prescription prescription;
+
 
     @Column(name = "drug_code", nullable = false)
     private String drugCode;
@@ -42,12 +46,16 @@ public class PrescriptionItem {
     @Column(name = "days")
     private Integer days;          // số ngày
 
+    @Column(name = "note")
+    private String note;
+
     @Column(name = "total_quantity")
     private Integer totalQuantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "drug_code", referencedColumnName = "code", insertable = false, updatable = false)
+    @com.fasterxml.jackson.annotation.JsonManagedReference
     private Drug drug;
-
+    
 }
 

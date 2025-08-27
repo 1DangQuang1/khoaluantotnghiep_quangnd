@@ -18,15 +18,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "emr_prescriptions")
-public class Prescription {
 
+@Table(name = "emr_invoices")
+
+public class Invoice {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,19 +35,23 @@ public class Prescription {
     @Column(name = "visit_id", nullable = false)
     private Long visitId;
 
-    @Column(name = "doctor_id", nullable = false)
-    private Long doctorId;
+    @Column(name = "patient_cccd", nullable = false)
+    private Long patientCccd;
 
-    @Column(name = "notes")
-    private String notes;
+    @Column(name = "patient_name", nullable = false)
+    private String patientName;
+
+    @Column(name = "total_amount", nullable = false)
+    private Double totalAmount;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    @OneToMany(mappedBy = "prescription", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<PrescriptionItem> items;
+    @Column(name = "status", nullable = false)
+    private String status; // PAID, UNPAID, CANCELLED
 
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<InvoiceItem> items;
 
 }
-

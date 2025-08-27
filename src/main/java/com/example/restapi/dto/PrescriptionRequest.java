@@ -24,5 +24,6 @@ public class PrescriptionRequest {
         private Integer dosePerTime;
         private Integer timesPerDay;
         private Integer days;
+        private String note;
     }
 }

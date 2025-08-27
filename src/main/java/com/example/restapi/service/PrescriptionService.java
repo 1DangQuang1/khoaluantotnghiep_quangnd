@@ -1,109 +1,129 @@
-// package com.example.restapi.service;
+package com.example.restapi.service;
 
-// import lombok.RequiredArgsConstructor;
+import com.example.restapi.dto.PrescriptionRequest;
+import com.example.restapi.dto.PrescriptionResponse;
+import com.example.restapi.model.Prescription;
+import com.example.restapi.model.PrescriptionItem;
+import com.example.restapi.model.Drug;
+import com.example.restapi.repository.PrescriptionRepository;
+import com.example.restapi.repository.VisitRepository;
+import com.example.restapi.repository.DrugRepository;
+import com.example.restapi.exceptions.DuplicateException;
+import com.example.restapi.exceptions.NotFoundException;
 
-// import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-// import java.util.List;
-// import java.util.stream.Collectors;
-
-// import com.example.restapi.dto.PrescriptionRequest;
-// import com.example.restapi.dto.PrescriptionResponse;
-
-// import com.example.restapi.repository.PrescriptionRepository;
-// import com.example.restapi.repository.DrugRepository;
-// import com.example.restapi.repository.PrescriptionItemRepository;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
-// @Service
-// @RequiredArgsConstructor
-// public class PrescriptionService {
+@Service
+@RequiredArgsConstructor
+public class PrescriptionService {
 
-//     private final PrescriptionRepository prescriptionRepository;
-//     private final DrugRepository drugRepository;
+    private final PrescriptionRepository prescriptionRepository;
+    private final DrugRepository drugRepository;
+    private final VisitRepository visitRepository;
+    /**
+     * Create new prescription for a visit
+     */
+    @Transactional
+    public PrescriptionResponse createPrescription(Long visitId, PrescriptionRequest dto) {
+        Prescription prescription = new Prescription();
+        // kiểm tra visitId có tồn tại không
+        if (!visitRepository.existsById(visitId)) {
+            throw new NotFoundException("Visit not found: " + visitId);
+        }
+        else if(prescriptionRepository.findByVisitId(visitId) != null) {
+            throw new DuplicateException("Prescription already exists for visitId: " + visitId);
+        }
+        prescription.setVisitId(visitId);
+        prescription.setDoctorId(dto.getDoctorId());
+        prescription.setNotes(dto.getNotes());
+        prescription.setCreatedAt(LocalDateTime.now());
 
-//     /**
-//      * Tạo mới đơn thuốc cho 1 visit
-//      */
-//     public PrescriptionResponse createPrescription(PrescriptionRequest request) {
-//         // 1. Map request -> entity
-//         Prescription prescription = new Prescription();
-//         prescription.setVisitId(request.getVisitId());
-//         prescription.setDoctorId(request.getDoctorId());
-//         prescription.setNotes(request.getNotes());
+        List<PrescriptionItem> items = dto.getItems().stream().map(reqItem -> {
+            Drug drug = drugRepository.findByCode(reqItem.getDrugCode())
+                    .orElseThrow(() -> new NotFoundException("Invalid drugCode: " + reqItem.getDrugCode()));
 
-//         List<PrescriptionItem> items = request.getItems().stream().map(i -> {
-//             PrescriptionItem item = new PrescriptionItem();
-//             item.setDrugCode(i.getDrugCode());
-//             item.setDosePerTime(i.getDosePerTime());
-//             item.setTimesPerDay(i.getTimesPerDay());
-//             item.setDays(i.getDays());
-//             item.setInstructions(i.getInstructions());
-//             item.setPrescription(prescription);
+            PrescriptionItem item = new PrescriptionItem();
+            item.setPrescription(prescription);
+            item.setDrugCode(reqItem.getDrugCode());
+            item.setDosePerTime(reqItem.getDosePerTime());
+            item.setTimesPerDay(reqItem.getTimesPerDay());
+            item.setDays(reqItem.getDays());
+            item.setNote(reqItem.getNote());
 
-//             // Calculate total quantity = dosePerTime * timesPerDay * days
-//             int totalQty = i.getDosePerTime() * i.getTimesPerDay() * i.getDays();
-//             item.setTotalQuantity(totalQty);
+            int totalQuantity = reqItem.getDosePerTime() * reqItem.getTimesPerDay() * reqItem.getDays();
+            item.setTotalQuantity(totalQuantity);
 
-//             return item;
-//         }).collect(Collectors.toList());
+            item.setDrug(drug); // map sang drug entity
+            return item;
+        }).collect(Collectors.toList());
 
-//         prescription.setItems(items);
+        prescription.setItems(items);
 
-//         // 2. Save vào DB
-//         Prescription saved = prescriptionRepository.save(prescription);
+        Prescription saved = prescriptionRepository.save(prescription);
 
-//         // 3. Map entity -> response dto (enrich thuốc từ drug mapping)
-//         return toResponseDto(saved);
-//     }
+        return mapToResponse(saved);
+    }
 
-//     /**
-//      * Lấy chi tiết đơn thuốc theo ID
-//      */
-//     public PrescriptionResponseDto getPrescription(Long prescriptionId) {
-//         Prescription prescription = prescriptionRepository.findById(prescriptionId)
-//                 .orElseThrow(() -> new RuntimeException("Prescription not found"));
 
-//         return toResponseDto(prescription);
-//     }
+    @Transactional(readOnly = true)
+    public PrescriptionResponse getPrescriptionByVisit(Long visitId) {
+        Prescription prescription = prescriptionRepository.findByVisitId(visitId)
+                .orElseThrow(() -> new NotFoundException("VisitId not found: " + visitId));
+        return mapToResponse(prescription);
+    }
 
-//     /**
-//      * Convert entity -> response dto
-//      */
-//     private PrescriptionResponseDto toResponseDto(Prescription prescription) {
-//         PrescriptionResponseDto dto = new PrescriptionResponseDto();
-//         dto.setId(prescription.getId());
-//         dto.setVisitId(prescription.getVisitId());
-//         dto.setDoctorId(prescription.getDoctorId());
-//         dto.setNotes(prescription.getNotes());
-//         dto.setCreatedAt(prescription.getCreatedAt());
+    /**
+     * Update prescription
+     */
+    @Transactional
+    public PrescriptionResponse updatePrescription(Long prescriptionId, PrescriptionRequest dto) {
+        Prescription prescription = prescriptionRepository.findById(prescriptionId)
+                .orElseThrow(() -> new IllegalArgumentException("Prescription not found: " + prescriptionId));
 
-//         List<PrescriptionResponseDto.PrescriptionItemResponseDto> items =
-//                 prescription.getItems().stream().map(item -> {
-//                     PrescriptionResponseDto.PrescriptionItemResponseDto iDto =
-//                             new PrescriptionResponseDto.PrescriptionItemResponseDto();
-//                     iDto.setId(item.getId());
-//                     iDto.setDrugCode(item.getDrugCode());
-//                     iDto.setDosePerTime(item.getDosePerTime());
-//                     iDto.setTimesPerDay(item.getTimesPerDay());
-//                     iDto.setDays(item.getDays());
-//                     iDto.setInstructions(item.getInstructions());
-//                     iDto.setTotalQuantity(item.getTotalQuantity());
+        prescription.setDoctorId(dto.getDoctorId());
+        prescription.setNotes(dto.getNotes());
 
-//                     // Enrich từ drug mapping
-//                     drugRepository.findByDrugCode(item.getDrugCode()).ifPresent(drug -> {
-//                         iDto.setDrugName(drug.getDrugName());
-//                         iDto.setActiveSubstance(drug.getActiveSubstance());
-//                         iDto.setDosageForm(drug.getDosageForm());
-//                         iDto.setStrength(drug.getStrength());
-//                         iDto.setUnit(drug.getUnit());
-//                     });
+        // clear old items & replace
+        prescription.getItems().clear();
 
-//                     return iDto;
-//                 }).collect(Collectors.toList());
+        List<PrescriptionItem> newItems = dto.getItems().stream().map(reqItem -> {
+            Drug drug = drugRepository.findByCode(reqItem.getDrugCode())
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid drugCode: " + reqItem.getDrugCode()));
 
-//         dto.setItems(items);
+            PrescriptionItem item = new PrescriptionItem();
+            item.setPrescription(prescription);
+            item.setDrugCode(reqItem.getDrugCode());
+            item.setDosePerTime(reqItem.getDosePerTime());
+            item.setTimesPerDay(reqItem.getTimesPerDay());
+            item.setDays(reqItem.getDays());
+            item.setTotalQuantity(reqItem.getDosePerTime() * reqItem.getTimesPerDay() * reqItem.getDays());
+            item.setDrug(drug);
 
-//         return dto;
-//     }
-// }
+            return item;
+        }).collect(Collectors.toList());
+
+        prescription.getItems().addAll(newItems);
+
+        Prescription updated = prescriptionRepository.save(prescription);
+        return mapToResponse(updated);
+    }
+
+
+    private PrescriptionResponse mapToResponse(Prescription prescription) {
+        return PrescriptionResponse.builder()
+                .id(prescription.getId())
+                .visitId(prescription.getVisitId())
+                .doctorId(prescription.getDoctorId())
+                .notes(prescription.getNotes())
+                .createdAt(prescription.getCreatedAt())
+                .items(prescription.getItems())  // theo yêu cầu: dùng entity PrescriptionItem trực tiếp
+                .build();
+    }
+}
