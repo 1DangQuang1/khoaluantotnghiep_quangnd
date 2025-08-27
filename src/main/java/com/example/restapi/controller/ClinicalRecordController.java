@@ -1,6 +1,8 @@
 package com.example.restapi.controller;
 
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,14 +35,15 @@ public class ClinicalRecordController {
     }
 
     @GetMapping
-    public ResponseEntity<ClinicalRecord> getByVisit(@PathVariable Long visitId) {
+    public ResponseEntity<List<ClinicalRecord>> getByVisit(@PathVariable Long visitId) {
         return ResponseEntity.ok(service.getByVisit(visitId));
     }
 
-    @PutMapping
+    @PutMapping("/{Id}")
     public ResponseEntity<ClinicalRecord> update(
             @PathVariable Long visitId,
+            @PathVariable Long Id,
             @RequestBody ClinicalRecord record) {
-        return ResponseEntity.ok(service.update(visitId, record));
+        return ResponseEntity.ok(service.update(Id, record));
     }
 }

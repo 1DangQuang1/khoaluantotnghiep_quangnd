@@ -1,10 +1,10 @@
 package com.example.restapi.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import com.example.restapi.exceptions.DuplicateException;
 import com.example.restapi.exceptions.RecordNotFoundException;
 import com.example.restapi.model.LabRecord;
 import com.example.restapi.repository.LabRecordRepository;
@@ -19,21 +19,18 @@ public class LabRecordService {
     }
 
     public LabRecord createLabResult(Long visitId, LabRecord labResult) {
-        if (labResultRepository.findByVisitId(visitId).isPresent()) {
-            throw new DuplicateException("Record already exists for this visit");
-        }
         labResult.setId(null);
         labResult.setVisitId(visitId);
         return labResultRepository.save(labResult);
     }
 
-    public LabRecord getLabResults(Long visitId) {
+    public List<LabRecord> getLabResults(Long visitId) {
         return labResultRepository.findByVisitId(visitId)
             .orElseThrow(() -> new RecordNotFoundException("Lab result not found with visitId: " + visitId));
     }
 
-    public LabRecord updateLabResult(Long visitId, LabRecord update) {
-        return ((Optional<LabRecord>) labResultRepository.findByVisitId(visitId))
+    public LabRecord updateLabResult(Long Id, LabRecord update) {
+        return ((Optional<LabRecord>) labResultRepository.findById(Id))
                 .map(existing -> {
                     existing.setType(update.getType());
                     existing.setPerformedDate(update.getPerformedDate());
@@ -42,11 +39,11 @@ public class LabRecordService {
                     existing.setConclusion(update.getConclusion());
                     return labResultRepository.save(existing);
                 })
-                .orElseThrow(() -> new RecordNotFoundException("Lab result not found with visitId: " + visitId));
+                .orElseThrow(() -> new RecordNotFoundException("Lab result not found with id: " + Id));
     }
 
-    public boolean deleteLabResult(Long visitId) {
-        return labResultRepository.findByVisitId(visitId)
+    public boolean deleteLabResult(Long Id) {
+        return labResultRepository.findById(Id)
                 .map(lab -> {
                     labResultRepository.delete(lab);
                     return true;

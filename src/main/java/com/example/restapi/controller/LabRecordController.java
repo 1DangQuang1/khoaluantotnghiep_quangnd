@@ -1,10 +1,12 @@
 package com.example.restapi.controller;
 
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,22 +44,24 @@ public class LabRecordController {
     }
 
     @GetMapping
-    public ResponseEntity<LabRecord> getLabResults(@PathVariable Long visitId) {
+    public ResponseEntity<List<LabRecord>> getLabResults(@PathVariable Long visitId) {
         return ResponseEntity.ok(labResultService.getLabResults(visitId));
     }
 
     @PutMapping
     public LabRecord updateLabResult(
             @PathVariable Long visitId,
+            @PathVariable Long Id,
             @RequestBody LabRecord update) {
-        return labResultService.updateLabResult(visitId, update);
+        return labResultService.updateLabResult(Id, update);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{Id}")
     public ResponseEntity<Void> deleteLabResult(
-        @PathVariable Long visitId)
+        @PathVariable Long visitId,
+        @PathVariable Long Id)
         {
-        boolean deleted = labResultService.deleteLabResult(visitId);
+        boolean deleted = labResultService.deleteLabResult(Id);
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }
