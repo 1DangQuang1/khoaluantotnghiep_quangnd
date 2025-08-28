@@ -4,18 +4,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.restapi.dto.VisitRequest;
 import com.example.restapi.dto.VisitResponse;
+import com.example.restapi.exceptions.NotFoundException;
 import com.example.restapi.exceptions.PatientNotFoundException;
 import com.example.restapi.exceptions.VisitNotFoundException;
-import com.example.restapi.exceptions.NotFoundException;
 import com.example.restapi.model.Patient;
 import com.example.restapi.model.Visit;
+import com.example.restapi.model.Visit.VisitStatus;
 import com.example.restapi.repository.DepartmentMappingRepository;
 import com.example.restapi.repository.PatientRepository;
 import com.example.restapi.repository.ServiceMappingRepository;
@@ -23,11 +22,11 @@ import com.example.restapi.repository.VisitRepository;
 
 import lombok.RequiredArgsConstructor;
 
+
 @Service
 @RequiredArgsConstructor
 public class VisitServiceImpl implements VisitService {
 
-    private static final Logger logger = LoggerFactory.getLogger(VisitServiceImpl.class);
 
     private final VisitRepository visitRepository;
     private final PatientRepository patientRepository;
@@ -96,6 +95,18 @@ public class VisitServiceImpl implements VisitService {
         }
 
         visit.setStatus(newStatus);
+        visit.setUpdatedAt(LocalDateTime.now());
+
+        return VisitResponse.fromEntity(visitRepository.save(visit));
+    }
+
+    @Override
+    @Transactional
+    public VisitResponse doneExamine(Long visitId) {
+        Visit visit = visitRepository.findById(visitId)
+                .orElseThrow(() -> new VisitNotFoundException("Visit not found with id " + visitId));
+
+        visit.setStatus(VisitStatus.DONE);
         visit.setUpdatedAt(LocalDateTime.now());
 
         return VisitResponse.fromEntity(visitRepository.save(visit));

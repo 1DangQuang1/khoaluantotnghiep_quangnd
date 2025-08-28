@@ -25,12 +25,12 @@ public class LabRecordService {
     }
 
     public List<LabRecord> getLabResults(Long visitId) {
-        return labResultRepository.findByVisitId(visitId)
-            .orElseThrow(() -> new RecordNotFoundException("Lab result not found with visitId: " + visitId));
+        return labResultRepository.findByVisitIdOrderByCreatedAtDesc(visitId)
+            .orElseThrow(() -> new RecordNotFoundException("Lab results not found with visitId: " + visitId));
     }
 
-    public LabRecord updateLabResult(Long Id, LabRecord update) {
-        return ((Optional<LabRecord>) labResultRepository.findById(Id))
+    public LabRecord updateLabRecordByVisitId(Long visitId, LabRecord update) {
+        return labResultRepository.findFirstByVisitIdOrderByCreatedAtDesc(visitId)
                 .map(existing -> {
                     existing.setType(update.getType());
                     existing.setPerformedDate(update.getPerformedDate());
@@ -39,9 +39,24 @@ public class LabRecordService {
                     existing.setConclusion(update.getConclusion());
                     return labResultRepository.save(existing);
                 })
-                .orElseThrow(() -> new RecordNotFoundException("Lab result not found with id: " + Id));
+                .orElseThrow(() -> new RecordNotFoundException(
+                        "No lab result found with visit id: " + visitId));
     }
 
+    public LabRecord updateLabRecordByCccd(Long visitId, String type, LabRecord update) {
+        return labResultRepository.findByVisitIdAndType(visitId, type)
+                .map(existing -> {
+                    existing.setType(type);
+                    existing.setPerformedDate(update.getPerformedDate());
+                    existing.setDoctorNote(update.getDoctorNote());
+                    existing.setResult(update.getResult());
+                    existing.setConclusion(update.getConclusion());
+                    return labResultRepository.save(existing);
+                })
+                .orElseThrow(() -> new RecordNotFoundException(
+                        "No lab result found for visitId: " + visitId));
+    }
+    
     public boolean deleteLabResult(Long Id) {
         return labResultRepository.findById(Id)
                 .map(lab -> {

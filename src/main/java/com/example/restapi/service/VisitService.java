@@ -16,4 +16,5 @@ public interface VisitService {
     VisitResponse assignDoctor(Long visitId, Long doctorId, Long roomId);
     VisitResponse getVisitByPatientCccd(String cccd);
     void cancelVisit(String cccd, String reason);
+    VisitResponse doneExamine(Long visitId);
 }

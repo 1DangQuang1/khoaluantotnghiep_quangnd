@@ -9,5 +9,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.example.restapi.model.ClinicalRecord;
 
 public interface ClinicalRecordRepository extends JpaRepository<ClinicalRecord, Long> {
-    Optional<List<ClinicalRecord>> findByVisitId(Long visitId);
+    Optional<ClinicalRecord> findByVisitId(Long visitId);
 }

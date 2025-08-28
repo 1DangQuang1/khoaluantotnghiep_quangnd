@@ -63,15 +63,20 @@ public class VisitController {
             @RequestParam Integer lockVersion) {
         return ResponseEntity.ok(visitService.updateStatus(visitId, newStatus, lockVersion));
     }
+
     @DeleteMapping("/cancel")
     public ResponseEntity<Void> cancelVisit(@RequestBody CancelRequest  request) {
         visitService.cancelVisit(request.getCccd(), request.getReason());
         return ResponseEntity.noContent().build();
     }
     
-
     @GetMapping("/patient/{cccd}")
     public ResponseEntity<VisitResponse> getVisitByPatientCccd(@PathVariable String cccd) {
         return ResponseEntity.ok(visitService.getVisitByPatientCccd(cccd));
+    }
+
+    @PutMapping("/{visitId}/status/done")
+    public ResponseEntity<VisitResponse> doneExamine(@PathVariable Long visitId) {
+        return ResponseEntity.ok(visitService.doneExamine(visitId));
     }
 }
