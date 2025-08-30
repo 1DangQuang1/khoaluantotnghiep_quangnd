@@ -36,7 +36,7 @@ public class Invoice {
     private Long visitId;
 
     @Column(name = "patient_cccd", nullable = false)
-    private Long patientCccd;
+    private String patientCccd;
 
     @Column(name = "patient_name", nullable = false)
     private String patientName;

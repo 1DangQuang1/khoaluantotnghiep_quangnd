@@ -21,16 +21,7 @@ public class PatientRequest {
     private String guardianName;
     private String guardianPhone;
     private String notes;
-    private InsuranceRequest insurance;
+    private String insuranceNumber;
     private String medicalHistory;
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class InsuranceRequest {
-        private boolean hasInsurance;
-        private String number;
-        private LocalDate expiry;
-        private String place;
-    }
 }

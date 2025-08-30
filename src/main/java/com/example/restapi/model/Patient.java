@@ -3,7 +3,6 @@ package com.example.restapi.model;
 import java.time.LocalDate;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -65,8 +64,8 @@ public class Patient {
 
     private String notes;
 
-    @Embedded
-    private Insurance insurance;
+    @Column(columnDefinition = "TEXT")
+    private String insuranceNumber;
 
     @Column(columnDefinition = "TEXT")
     private String medicalHistory;

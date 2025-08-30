@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.example.restapi.dto.PatientRequest;
 import com.example.restapi.dto.PatientResponse;
 import com.example.restapi.exceptions.DuplicateException;
-import com.example.restapi.model.Insurance;
 import com.example.restapi.model.Patient;
 import com.example.restapi.repository.PatientRepository;
 
@@ -109,15 +108,8 @@ public class PatientService {
                 .notes(request.getNotes())
                 .medicalHistory(request.getMedicalHistory());
     
-        if (request.getInsurance() != null) {
-            builder.insurance(
-                    Insurance.builder()
-                            .hasInsurance(request.getInsurance().isHasInsurance())
-                            .number(request.getInsurance().getNumber())
-                            .expiry(request.getInsurance().getExpiry())
-                            .place(request.getInsurance().getPlace())
-                            .build()
-            );
+        if (request.getInsuranceNumber() != null) {
+            builder.insuranceNumber(request.getInsuranceNumber());
         }
     
         return builder.build();
@@ -135,26 +127,11 @@ public class PatientService {
         patient.setGuardianName(request.getGuardianName());
         patient.setGuardianPhone(request.getGuardianPhone());
         patient.setNotes(request.getNotes());
-        patient.setInsurance(Insurance.builder()
-                .hasInsurance(request.getInsurance().isHasInsurance())
-                .number(request.getInsurance().getNumber())
-                .expiry(request.getInsurance().getExpiry())
-                .place(request.getInsurance().getPlace())
-                .build());
+        patient.setInsuranceNumber(request.getInsuranceNumber());
         patient.setMedicalHistory(request.getMedicalHistory());
     }
 
     private PatientResponse mapToResponse(Patient patient) {
-        PatientResponse.InsuranceResponse insuranceResponse = null;
-        if (patient.getInsurance() != null) {
-            insuranceResponse = new PatientResponse.InsuranceResponse(
-                    patient.getInsurance().getHasInsurance(),
-                    patient.getInsurance().getNumber(),
-                    patient.getInsurance().getExpiry(),
-                    patient.getInsurance().getPlace()
-            );
-        }
-    
         return new PatientResponse(
                 patient.getId(),
                 patient.getFullName(),
@@ -168,7 +145,7 @@ public class PatientService {
                 patient.getGuardianName(),
                 patient.getGuardianPhone(),
                 patient.getNotes(),
-                insuranceResponse,
+                patient.getInsuranceNumber() != null ? patient.getInsuranceNumber() :null,
                 patient.getMedicalHistory()
         );
     }

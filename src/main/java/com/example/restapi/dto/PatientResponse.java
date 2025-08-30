@@ -22,14 +22,14 @@ public class PatientResponse {
     private String guardianName;
     private String guardianPhone;
     private String notes;
-    private InsuranceResponse insurance;
+    private String insuranceNumber;
     private String medicalHistory;
     private String message;
 
     public PatientResponse(Long id, String fullName, LocalDate birthDate, String gender, 
                            String cccd, String bloodType, String phone, String email, 
                            String address, String guardianName, String guardianPhone, 
-                           String notes, InsuranceResponse insurance, String medicalHistory) {
+                           String notes, String insuranceNumber, String medicalHistory) {
         this.id = id;
         this.fullName = fullName;
         this.birthDate = birthDate;
@@ -42,18 +42,9 @@ public class PatientResponse {
         this.guardianName = guardianName;
         this.guardianPhone = guardianPhone;
         this.notes = notes;
-        this.insurance = insurance;
+        this.insuranceNumber = insuranceNumber;
         this.medicalHistory = medicalHistory;
-        this.message = "Patient info retrieved successfully";
+        this.message = "Lấy dữ liệu bệnh nhân thành công";
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class InsuranceResponse {
-        private boolean hasInsurance;
-        private String number;
-        private LocalDate expiry;
-        private String place;
-    }
 }
