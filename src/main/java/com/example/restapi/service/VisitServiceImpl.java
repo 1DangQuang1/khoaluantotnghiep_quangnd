@@ -87,14 +87,9 @@ public class VisitServiceImpl implements VisitService {
 
     @Override
     @Transactional
-    public VisitResponse updateStatus(Long visitId, Visit.VisitStatus newStatus, Integer lockVersion) {
+    public VisitResponse updateStatus(Long visitId, Visit.VisitStatus newStatus) {
         Visit visit = visitRepository.findById(visitId)
                 .orElseThrow(() -> new VisitNotFoundException("Visit not found with id " + visitId));
-
-        if (!visit.getLockVersion().equals(lockVersion)) {
-            throw new IllegalStateException("Visit was updated by another transaction");
-        }
-
         visit.setStatus(newStatus);
         visit.setUpdatedAt(LocalDateTime.now());
 

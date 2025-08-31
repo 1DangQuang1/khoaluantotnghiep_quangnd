@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import com.example.restapi.exceptions.DuplicateException;
 import com.example.restapi.exceptions.VisitNotFoundException;
 import com.example.restapi.model.ClinicalRecord;
+import com.example.restapi.model.Visit;
 import com.example.restapi.repository.ClinicalRecordRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -15,12 +16,15 @@ import lombok.RequiredArgsConstructor;
 public class ClinicalRecordService {
 
     private final ClinicalRecordRepository repository;
+    private final VisitService visitService;
 
     public <Optional>ClinicalRecord create(Long visitId, ClinicalRecord record) {
         if (repository.findByVisitId(visitId).isPresent()) {
             throw new DuplicateException("Record already exists for visitId: " + visitId);
         }
         record.setVisitId(visitId);
+        visitService.updateCurrentStep(visitId, Visit.VisitStep.CLINICAL);
+        visitService.updateStatus(visitId, Visit.VisitStatus.EXAMINING);
         return repository.save(record);
     }
 

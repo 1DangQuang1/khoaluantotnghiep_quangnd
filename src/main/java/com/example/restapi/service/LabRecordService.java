@@ -7,20 +7,26 @@ import org.springframework.stereotype.Service;
 
 import com.example.restapi.exceptions.RecordNotFoundException;
 import com.example.restapi.model.LabRecord;
+import com.example.restapi.model.Visit;
+
 import com.example.restapi.repository.LabRecordRepository;
 
 @Service
 public class LabRecordService {
 
     private final LabRecordRepository labResultRepository;
+    private final VisitService visitService;
 
-    public LabRecordService(LabRecordRepository labResultRepository) {
+    public LabRecordService(LabRecordRepository labResultRepository, com.example.restapi.service.VisitService visitService) {
         this.labResultRepository = labResultRepository;
+        this.visitService = visitService;
     }
 
     public LabRecord createLabResult(Long visitId, LabRecord labResult) {
         labResult.setId(null);
         labResult.setVisitId(visitId);
+        visitService.updateCurrentStep(visitId, Visit.VisitStep.PARACLINICAL);
+        visitService.updateStatus(visitId, Visit.VisitStatus.EXAMINING);
         return labResultRepository.save(labResult);
     }
 

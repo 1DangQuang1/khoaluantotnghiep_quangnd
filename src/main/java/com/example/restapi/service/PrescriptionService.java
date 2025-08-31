@@ -5,6 +5,8 @@ import com.example.restapi.dto.PrescriptionResponse;
 import com.example.restapi.model.Prescription;
 import com.example.restapi.model.PrescriptionItem;
 import com.example.restapi.model.Drug;
+import com.example.restapi.model.Visit;
+
 import com.example.restapi.repository.PrescriptionRepository;
 import com.example.restapi.repository.VisitRepository;
 import com.example.restapi.repository.DrugRepository;
@@ -27,6 +29,7 @@ public class PrescriptionService {
     private final PrescriptionRepository prescriptionRepository;
     private final DrugRepository drugRepository;
     private final VisitRepository visitRepository;
+    private final VisitService visitService;
     /**
      * Create new prescription for a visit
      */
@@ -67,6 +70,9 @@ public class PrescriptionService {
         prescription.setItems(items);
 
         Prescription saved = prescriptionRepository.save(prescription);
+
+        visitService.updateCurrentStep(visitId, Visit.VisitStep.PRESCRIPTION);
+        visitService.updateStatus(visitId, Visit.VisitStatus.EXAMINING);
 
         return mapToResponse(saved);
     }

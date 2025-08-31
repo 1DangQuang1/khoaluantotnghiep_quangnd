@@ -29,7 +29,6 @@ public class ClinicalRecordController {
     @PostMapping("/{visitId}/clinical")
     public ResponseEntity<ClinicalRecord> create(@PathVariable Long visitId, @RequestBody ClinicalRecord record) {
         ClinicalRecord saved = service.create(visitId, record);
-        visitService.updateCurrentStep(visitId, Visit.VisitStep.CLINICAL);
         return ResponseEntity.ok(saved);
     }
 

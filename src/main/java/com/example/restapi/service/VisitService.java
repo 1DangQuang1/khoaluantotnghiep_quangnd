@@ -11,7 +11,7 @@ public interface VisitService {
     VisitResponse createVisit(VisitRequest request);
     List<VisitResponse> listVisits(Visit.VisitStatus status, Long departmentId, LocalDate date);
     VisitResponse getVisit(Long visitId);
-    VisitResponse updateStatus(Long visitId, Visit.VisitStatus newStatus, Integer lockVersion);
+    VisitResponse updateStatus(Long visitId, Visit.VisitStatus newStatus);
     VisitResponse updateCurrentStep(Long visitId, Visit.VisitStep newStep);
     VisitResponse assignDoctor(Long visitId, Long doctorId, Long roomId);
     VisitResponse getVisitByPatientCccd(String cccd);

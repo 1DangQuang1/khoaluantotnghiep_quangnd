@@ -40,7 +40,6 @@ public class LabRecordController {
             @PathVariable Long visitId,
             @RequestBody LabRecord labResult) {
         LabRecord saved = labResultService.createLabResult(visitId, labResult);
-        visitService.updateCurrentStep(visitId, Visit.VisitStep.PARACLINICAL);
         return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
 

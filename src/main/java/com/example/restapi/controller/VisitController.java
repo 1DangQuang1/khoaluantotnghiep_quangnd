@@ -59,9 +59,8 @@ public class VisitController {
     @PutMapping("/{visitId}/status")
     public ResponseEntity<VisitResponse> updateStatus(
             @PathVariable Long visitId,
-            @RequestParam Visit.VisitStatus newStatus,
-            @RequestParam Integer lockVersion) {
-        return ResponseEntity.ok(visitService.updateStatus(visitId, newStatus, lockVersion));
+            @RequestParam Visit.VisitStatus newStatus){
+        return ResponseEntity.ok(visitService.updateStatus(visitId, newStatus));
     }
 
     @DeleteMapping("/cancel")
