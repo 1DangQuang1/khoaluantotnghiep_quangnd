@@ -22,6 +22,7 @@ public class VisitResponse {
 
     private Long patientId;
     private String patientCccd;
+    private String patientFullName;
 
     private Long doctorId;
     private Long departmentId;
@@ -42,6 +43,7 @@ public class VisitResponse {
                 .queueNo(visit.getQueueNo())
                 .patientId(visit.getPatientId())
                 .patientCccd(visit.getPatientCccd())
+                .patientFullName(visit.getPatientFullName())
                 .doctorId(visit.getDoctorId())
                 .departmentId(visit.getDepartmentId())
                 .serviceId(visit.getServiceId())

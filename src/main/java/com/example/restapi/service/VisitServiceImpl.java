@@ -59,6 +59,7 @@ public class VisitServiceImpl implements VisitService {
                 .queueNo(queueNo)
                 .patientId(patient.getId())
                 .patientCccd(patient.getCccd())
+                .patientFullName(patient.getFullName())
                 .departmentId(request.getDepartmentId())
                 .serviceId(request.getServiceId())
                 .createdAt(LocalDateTime.now())

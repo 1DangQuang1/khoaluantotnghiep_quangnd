@@ -56,6 +56,9 @@ public class Visit {
     @Column(name = "patient_cccd", nullable = false, length = 20)
     private String patientCccd;
 
+    @Column(name = "patient_full_name", nullable = false, length = 200)
+    private String patientFullName;
+
     @Column(name = "doctor_id")
     private Long doctorId;
 
