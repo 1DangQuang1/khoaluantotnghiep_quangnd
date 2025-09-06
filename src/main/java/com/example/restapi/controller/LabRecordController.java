@@ -2,7 +2,6 @@ package com.example.restapi.controller;
 
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,26 +12,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.restapi.dto.VisitResponse;
 import com.example.restapi.model.LabRecord;
-import com.example.restapi.model.Visit;
 import com.example.restapi.service.LabRecordService;
 import com.example.restapi.service.VisitService;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/visits")
 public class LabRecordController {
 
     private final LabRecordService labResultService;
-    private final VisitService visitService;
 
     
     public LabRecordController(LabRecordService labResultService, VisitService visitService) {
             this.labResultService = labResultService;
-            this.visitService = visitService;
     }
 
     @PostMapping("/{visitId}/lab-results")
@@ -48,23 +44,21 @@ public class LabRecordController {
         return ResponseEntity.ok(labResultService.getLabResults(visitId));
     }
 
+    @GetMapping("/lab-service-names")
+    public List<String> getAllLabServiceNames() {
+        return labResultService.getAllLabServiceNames();
+    }
+    
+    
 
-    @PutMapping("/{visitId}/lab-results")
-    public LabRecord updateLatestLabRecord(
+    @PutMapping("/{visitId}/lab-results/{id}")
+    public LabRecord update(
             @PathVariable Long visitId,
+            @PathVariable Long id,
             @RequestBody LabRecord update) {
-        return labResultService.updateLabRecordByVisitId(visitId, update);
+        return labResultService.updateLabRecordById(id, update);
     }
 
-    @PutMapping("/lab-results/{cccd}")
-    public LabRecord updateLatestLabRecord(
-            @PathVariable String cccd,
-            @RequestParam String type,
-            @RequestBody LabRecord update) {
-        VisitResponse visit = visitService.getVisitByPatientCccd(cccd); 
-        Long visitId = visit.getId();       
-        return labResultService.updateLabRecordByCccd(visitId, type, update);
-    }
 
     @DeleteMapping("/{Id}")
     public ResponseEntity<Void> deleteLabResult(

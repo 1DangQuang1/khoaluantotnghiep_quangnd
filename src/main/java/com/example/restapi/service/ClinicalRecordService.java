@@ -3,8 +3,7 @@ package com.example.restapi.service;
 
 import org.springframework.stereotype.Service;
 
-import com.example.restapi.exceptions.DuplicateException;
-import com.example.restapi.exceptions.VisitNotFoundException;
+import com.example.restapi.exceptions.NotFoundException;
 import com.example.restapi.model.ClinicalRecord;
 import com.example.restapi.model.Visit;
 import com.example.restapi.repository.ClinicalRecordRepository;
@@ -19,23 +18,20 @@ public class ClinicalRecordService {
     private final VisitService visitService;
 
     public <Optional>ClinicalRecord create(Long visitId, ClinicalRecord record) {
-        if (repository.findByVisitId(visitId).isPresent()) {
-            throw new DuplicateException("Record already exists for visitId: " + visitId);
-        }
         record.setVisitId(visitId);
         visitService.updateCurrentStep(visitId, Visit.VisitStep.CLINICAL);
         visitService.updateStatus(visitId, Visit.VisitStatus.EXAMINING);
         return repository.save(record);
     }
 
-    public ClinicalRecord getByVisit(Long visitId) {
-        return repository.findByVisitId(visitId
-        ).orElseThrow(() -> new VisitNotFoundException("Record not found"));
+    public ClinicalRecord getById(Long id) {
+        return repository.findById(id
+        ).orElseThrow(() -> new NotFoundException("Record not found"));
     }
 
     public ClinicalRecord update(Long visitId, ClinicalRecord record) {
         ClinicalRecord existing = repository.findByVisitId(visitId)
-                .orElseThrow(() -> new VisitNotFoundException("Record not found"));
+                .orElseThrow(() -> new NotFoundException("Record not found"));
 
         record.setId(existing.getId());
         record.setVisitId(existing.getVisitId());

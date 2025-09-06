@@ -1,5 +1,6 @@
 package com.example.restapi.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -42,13 +43,10 @@ public class Invoice {
     private String patientName;
 
     @Column(name = "total_amount", nullable = false)
-    private Double totalAmount;
+    private BigDecimal totalAmount;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    @Column(name = "status", nullable = false)
-    private String status; // PAID, UNPAID, CANCELLED
 
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

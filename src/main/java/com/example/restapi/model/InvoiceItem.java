@@ -18,8 +18,8 @@ public class InvoiceItem {
     private Long id;
 
     // Loại dịch vụ (Khám bệnh, Xét nghiệm, Thuốc, Vật tư, ...)
-    @Column(name = "service_type", nullable = false, length = 100)
-    private String serviceType;
+    @Column(name = "visit_id", nullable = false, length = 100)
+    private Long visitId;
 
     // Tên dịch vụ hoặc thuốc
     @Column(name = "service_name", nullable = false, length = 255)
@@ -31,7 +31,10 @@ public class InvoiceItem {
 
     // Đơn giá (VNĐ)
     @Column(name = "unit_price", nullable = false, precision = 15, scale = 2)
-    private BigDecimal unitPrice;
+    private String unitPrice;
+
+    @Column(name = "each_unit_price", nullable = false, precision = 15, scale = 2)
+    private BigDecimal eachUnitPrice;
 
     // Thành tiền = Số lượng * Đơn giá
     @Column(name = "total_price", nullable = false, precision = 15, scale = 2)
