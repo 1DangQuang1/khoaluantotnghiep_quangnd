@@ -5,12 +5,13 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
-@Entity
-@Table(name = "emr_invoice_items")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Entity
+@Table(name = "emr_invoice_items")
 public class InvoiceItem {
 
     @Id
@@ -52,4 +53,6 @@ public class InvoiceItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invoice_id", nullable = false)
     private Invoice invoice;
+
+
 }

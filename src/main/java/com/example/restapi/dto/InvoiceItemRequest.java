@@ -8,10 +8,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class  InvoiceItemResponse {
+public class InvoiceItemRequest {
     private String serviceName;
     private Integer quantity;
     private String unitPrice;
@@ -19,4 +19,8 @@ public class  InvoiceItemResponse {
     private BigDecimal totalPrice;
     private BigDecimal insurancePaid;
     private BigDecimal patientPaid;
+    public Long getId() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getId'");
+    }
 }

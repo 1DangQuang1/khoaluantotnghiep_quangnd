@@ -3,10 +3,13 @@ package com.example.restapi.service;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.example.restapi.dto.VisitRequest;
 import com.example.restapi.dto.VisitResponse;
 import com.example.restapi.model.Visit;
 
+@Service
 public interface VisitService {
     VisitResponse createVisit(VisitRequest request);
     List<VisitResponse> listVisits(Visit.VisitStatus status, Long departmentId, LocalDate date);
