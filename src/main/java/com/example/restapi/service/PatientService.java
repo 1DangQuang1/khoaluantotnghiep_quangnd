@@ -2,15 +2,16 @@ package com.example.restapi.service;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.example.restapi.dto.PatientRequest;
 import com.example.restapi.dto.PatientResponse;
 import com.example.restapi.exceptions.DuplicateException;
 import com.example.restapi.model.Patient;
+import com.example.restapi.model.PatientSpecification;
+import com.example.restapi.model.Visit;
 import com.example.restapi.repository.PatientRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -38,10 +39,38 @@ public class PatientService {
     }
 
     // Get all patients
-    public Page<PatientResponse> getListPatients(int page, int size) {
-    Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
-    return patientRepository.findAll(pageable)
-            .map(this::mapToResponse);  // map entity -> DTO
+    public Page<PatientResponse> getPatientsWithFilter(
+            String name,
+            String cccd,
+            String gender,
+            Boolean bhyt,
+            Visit.VisitStatus status,
+            Long departmentId,
+            Pageable pageable) {
+
+        Specification<Patient> spec = Specification.unrestricted();
+
+        if (name != null && !name.isEmpty()) {
+            spec = spec.and(PatientSpecification.hasName(name));
+        }
+        if (cccd != null && !cccd.isEmpty()) {
+            spec = spec.and(PatientSpecification.hasCccd(cccd));
+        }
+        if (gender != null && !gender.isEmpty()) {
+            spec = spec.and(PatientSpecification.hasGender(gender));
+        }
+        if (bhyt != null) {
+            spec = spec.and(PatientSpecification.hasBhyt(bhyt));
+        }
+        if (status != null) {
+            spec = spec.and(PatientSpecification.hasStatus(status));
+        }
+        if (departmentId != null) {
+            spec = spec.and(PatientSpecification.hasDepartment(departmentId));
+        }
+
+        return patientRepository.findAll(spec, pageable)
+                .map(this::mapToResponse);
     }
 
     // Get patient by id

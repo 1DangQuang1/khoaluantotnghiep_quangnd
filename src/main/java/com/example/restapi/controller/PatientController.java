@@ -1,7 +1,8 @@
 package com.example.restapi.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,10 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.restapi.dto.PatientRequest;
 import com.example.restapi.dto.PatientResponse;
+import com.example.restapi.model.Visit;
 import com.example.restapi.service.PatientService;
 
 import lombok.RequiredArgsConstructor;
@@ -45,11 +48,22 @@ public class PatientController {
 
     // Get all patients
     @GetMapping("/list/{page}/{size}")
-    public ResponseEntity<List<PatientResponse>> getListPatients(
+    public ResponseEntity<Page<PatientResponse>> getListPatients(
         @PathVariable int page,
-        @PathVariable int size
+        @PathVariable int size,
+        @RequestParam(required = false) String name,
+        @RequestParam(required = false) String cccd,
+        @RequestParam(required = false) String gender,
+        @RequestParam(required = false) Boolean bhyt,
+        @RequestParam(required = false) Visit.VisitStatus status,
+        @RequestParam(required = false) Long departmentId
     ) {
-        return ResponseEntity.ok(patientService.getListPatients(page - 1 , size).getContent());
+        Pageable pageable = PageRequest.of(page - 1, size); // page = 1 => offset 0
+        Page<PatientResponse> patients = patientService.getPatientsWithFilter(
+                name, cccd, gender, bhyt, status, departmentId, pageable);
+
+        return ResponseEntity.ok(patients);
+
     }
 
     // ===== UPDATE =====
