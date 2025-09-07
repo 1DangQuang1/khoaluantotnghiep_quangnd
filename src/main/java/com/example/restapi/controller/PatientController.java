@@ -49,7 +49,7 @@ public class PatientController {
         @PathVariable int page,
         @PathVariable int size
     ) {
-        return ResponseEntity.ok(patientService.getListPatients(page, size).getContent());
+        return ResponseEntity.ok(patientService.getListPatients(page - 1 , size).getContent());
     }
 
     // ===== UPDATE =====
