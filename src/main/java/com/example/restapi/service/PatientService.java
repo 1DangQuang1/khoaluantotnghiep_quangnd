@@ -1,9 +1,10 @@
 package com.example.restapi.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.restapi.dto.PatientRequest;
@@ -37,11 +38,10 @@ public class PatientService {
     }
 
     // Get all patients
-    public List<PatientResponse> getAllPatients() {
-        return patientRepository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+    public Page<PatientResponse> getListPatients(int page, int size) {
+    Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+    return patientRepository.findAll(pageable)
+            .map(this::mapToResponse);  // map entity -> DTO
     }
 
     // Get patient by id
