@@ -1,11 +1,17 @@
 package com.example.restapi.service;
 
+import java.time.LocalDate;
+import java.time.Period;
+
+import java.util.Optional;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.example.restapi.dto.LatestVisitInfo;
+import com.example.restapi.dto.PatientListResponse;
 import com.example.restapi.dto.PatientRequest;
 import com.example.restapi.dto.PatientResponse;
 import com.example.restapi.exceptions.DuplicateException;
@@ -13,6 +19,7 @@ import com.example.restapi.model.Patient;
 import com.example.restapi.model.PatientSpecification;
 import com.example.restapi.model.Visit;
 import com.example.restapi.repository.PatientRepository;
+import com.example.restapi.repository.VisitRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -31,15 +38,13 @@ public class PatientService {
     }
 
 
-    // Create patient
     public PatientResponse createPatient(PatientRequest request) {
         Patient patient = mapToEntity(request);
         Patient saved = savePatient(patient);
         return mapToResponse(saved);
     }
 
-    // Get all patients
-    public Page<PatientResponse> getPatientsWithFilter(
+    public Page<PatientListResponse> getPatientsWithFilter(
             String name,
             String cccd,
             String gender,
@@ -50,27 +55,15 @@ public class PatientService {
 
         Specification<Patient> spec = Specification.unrestricted();
 
-        if (name != null && !name.isEmpty()) {
-            spec = spec.and(PatientSpecification.hasName(name));
-        }
-        if (cccd != null && !cccd.isEmpty()) {
-            spec = spec.and(PatientSpecification.hasCccd(cccd));
-        }
-        if (gender != null && !gender.isEmpty()) {
-            spec = spec.and(PatientSpecification.hasGender(gender));
-        }
-        if (bhyt != null) {
-            spec = spec.and(PatientSpecification.hasBhyt(bhyt));
-        }
-        if (status != null) {
-            spec = spec.and(PatientSpecification.hasStatus(status));
-        }
-        if (departmentId != null) {
-            spec = spec.and(PatientSpecification.hasDepartment(departmentId));
-        }
+        if (name != null && !name.isEmpty()) spec = spec.and(PatientSpecification.hasName(name));
+        if (cccd != null && !cccd.isEmpty()) spec = spec.and(PatientSpecification.hasCccd(cccd));
+        if (gender != null && !gender.isEmpty()) spec = spec.and(PatientSpecification.hasGender(gender));
+        if (bhyt != null) spec = spec.and(PatientSpecification.hasBhyt(bhyt));
+        if (status != null) spec = spec.and(PatientSpecification.hasStatus(status));
+        if (departmentId != null) spec = spec.and(PatientSpecification.hasDepartment(departmentId));
 
         return patientRepository.findAll(spec, pageable)
-                .map(this::mapToResponse);
+                .map(this::mapToResponseWithVisit);
     }
 
     // Get patient by id
@@ -178,5 +171,35 @@ public class PatientService {
                 patient.getMedicalHistory()
         );
     }
+
+    private PatientListResponse mapToResponseWithVisit(Patient patient) {
+    Optional<LatestVisitInfo> latestVisitOpt = patientRepository.findLatestVisitInfoByPatientId(patient.getId());
+
+    PatientListResponse response = PatientListResponse.builder()
+            .patientId(patient.getId())
+            .patientFullName(patient.getFullName())
+            .patientCccd(patient.getCccd())
+            .patientGender(patient.getGender())
+            .patientAge(patient.getBirthDate() != null
+                    ? String.valueOf(Period.between(patient.getBirthDate(), LocalDate.now()).getYears())
+                    : null)
+            .patientBhyt(patient.getInsuranceNumber())
+            .phone(patient.getPhone())
+            .address(patient.getAddress())
+            .build();
+
+    latestVisitOpt.ifPresent(latestVisit -> {
+        response.setDepartmentName(latestVisit.getDepartmentName());
+        response.setLatestVisitStatus(latestVisit.getStatus());
+        response.setLatestVisitDate(latestVisit.getLastVisitDate() != null
+                ? latestVisit.getLastVisitDate().toString()
+                : null);
+        response.setVisitCount(latestVisit.getVisitCount() != null ? latestVisit.getVisitCount() : 0);
+    });
+
+    return response;
+}
+
+    
     
 }

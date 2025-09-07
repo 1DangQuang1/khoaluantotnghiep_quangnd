@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.restapi.dto.PatientListResponse;
 import com.example.restapi.dto.PatientRequest;
 import com.example.restapi.dto.PatientResponse;
 import com.example.restapi.model.Visit;
@@ -48,7 +49,7 @@ public class PatientController {
 
     // Get all patients
     @GetMapping("/list/{page}/{size}")
-    public ResponseEntity<Page<PatientResponse>> getListPatients(
+    public ResponseEntity<Page<PatientListResponse>> getListPatients(
         @PathVariable int page,
         @PathVariable int size,
         @RequestParam(required = false) String name,
@@ -59,7 +60,7 @@ public class PatientController {
         @RequestParam(required = false) Long departmentId
     ) {
         Pageable pageable = PageRequest.of(page - 1, size); // page = 1 => offset 0
-        Page<PatientResponse> patients = patientService.getPatientsWithFilter(
+        Page<PatientListResponse> patients = patientService.getPatientsWithFilter(
                 name, cccd, gender, bhyt, status, departmentId, pageable);
 
         return ResponseEntity.ok(patients);
