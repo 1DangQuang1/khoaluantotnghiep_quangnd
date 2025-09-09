@@ -28,8 +28,8 @@ public class ClinicalRecordController {
     }
 
     @GetMapping("/{visitId}/clinical")
-    public ResponseEntity<ClinicalRecord> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(service.getById(id));
+    public ResponseEntity<ClinicalRecord> get(@PathVariable Long visitId) {
+        return ResponseEntity.ok(service.getByVisitId(visitId));
     }
 
     @PutMapping("/{visitId}/clinical")
