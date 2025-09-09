@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
 @RequiredArgsConstructor
 public class PrescriptionService {
@@ -30,6 +29,7 @@ public class PrescriptionService {
     private final DrugRepository drugRepository;
     private final VisitRepository visitRepository;
     private final VisitService visitService;
+
     /**
      * Create new prescription for a visit
      */
@@ -39,8 +39,7 @@ public class PrescriptionService {
         // kiểm tra visitId có tồn tại không
         if (!visitRepository.existsById(visitId)) {
             throw new NotFoundException("Visit not found: " + visitId);
-        }
-        else if(prescriptionRepository.findByVisitId(visitId) != null) {
+        } else if (prescriptionRepository.findByVisitId(visitId).isPresent()) {
             throw new DuplicateException("Prescription already exists for visitId: " + visitId);
         }
         prescription.setVisitId(visitId);
@@ -76,7 +75,6 @@ public class PrescriptionService {
 
         return mapToResponse(saved);
     }
-
 
     @Transactional(readOnly = true)
     public PrescriptionResponse getPrescriptionByVisit(Long visitId) {
@@ -121,7 +119,6 @@ public class PrescriptionService {
         return mapToResponse(updated);
     }
 
-
     private PrescriptionResponse mapToResponse(Prescription prescription) {
         return PrescriptionResponse.builder()
                 .id(prescription.getId())
@@ -129,7 +126,7 @@ public class PrescriptionService {
                 .doctorId(prescription.getDoctorId())
                 .notes(prescription.getNotes())
                 .createdAt(prescription.getCreatedAt())
-                .items(prescription.getItems())  // theo yêu cầu: dùng entity PrescriptionItem trực tiếp
+                .items(prescription.getItems()) // theo yêu cầu: dùng entity PrescriptionItem trực tiếp
                 .build();
     }
 }
