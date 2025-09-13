@@ -15,11 +15,11 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
     int countByDepartmentIdAndVisitDateAndShift(Long departmentId, LocalDate visitDate, Integer shift);
     Optional<Visit> findTopByPatientIdOrderByCreatedAtDesc(Long patientId);
 
-    @Query(value ="""
+    @Query("""
     SELECT v FROM Visit v
     WHERE (:status IS NULL OR v.status = :status)
       AND (:departmentId IS NULL OR v.departmentId = :departmentId)
-    """, nativeQuery= true)
+    """)
     List<Visit> findByFilters(@Param("status") Visit.VisitStatus status,
                             @Param("departmentId") Long departmentId);
 
