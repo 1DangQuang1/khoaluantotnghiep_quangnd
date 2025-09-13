@@ -20,5 +20,4 @@ public class VisitRequest {
     private Integer shift;
 
     private Long doctorId;
-    private String reason;     
 }

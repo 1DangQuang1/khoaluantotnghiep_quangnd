@@ -71,8 +71,6 @@ public class Visit {
     @Column(name = "service_id", length = 100)
     private Long serviceId;
 
-    @Column(name = "room_id")
-    private Long roomId;
 
     @Version
     @Column(name = "lock_version")
