@@ -1,7 +1,5 @@
 package com.example.restapi.dto;
 
-import com.example.restapi.model.Visit;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -21,6 +19,6 @@ public class VisitRequest {
     @NotNull(message = "Shift is required")
     private Integer shift;
 
+    private Long doctorId;
     private String reason;     
-    private Integer priorityLevel;
 }

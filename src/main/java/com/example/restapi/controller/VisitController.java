@@ -1,5 +1,4 @@
 package com.example.restapi.controller;
-import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -37,23 +36,13 @@ public class VisitController {
     @GetMapping
     public ResponseEntity<List<VisitResponse>> listVisits(
             @RequestParam(required = false) Visit.VisitStatus status,
-            @RequestParam(required = false) Long departmentId,
-            @RequestParam(required = false) LocalDate date) {
-        return ResponseEntity.ok(visitService.listVisits(status, departmentId, date));
+            @RequestParam(required = false) Long departmentId) {
+return ResponseEntity.ok(visitService.listVisits(status, departmentId));
     }
 
     @GetMapping("/{visitId}")
     public ResponseEntity<VisitResponse> getVisit(@PathVariable Long visitId) {
         return ResponseEntity.ok(visitService.getVisit(visitId));
-    }
-
-
-    @PutMapping("/{visitId}/assign")
-    public ResponseEntity<VisitResponse> assignDoctor(
-            @PathVariable Long visitId,
-            @RequestParam Long doctorId,
-            @RequestParam Long roomId) {
-        return ResponseEntity.ok(visitService.assignDoctor(visitId, doctorId, roomId));
     }
 
     @PutMapping("/{visitId}/status")

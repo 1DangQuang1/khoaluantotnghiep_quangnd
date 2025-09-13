@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 public class PrescriptionResponse {
     private Long id;
     private Long visitId;
-    private Long doctorId;
     private String notes;
     private LocalDateTime createdAt;
     private List<PrescriptionItem> items;

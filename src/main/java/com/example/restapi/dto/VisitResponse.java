@@ -2,7 +2,6 @@ package com.example.restapi.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 import com.example.restapi.model.Visit;
 
@@ -27,9 +26,7 @@ public class VisitResponse {
     private Long doctorId;
     private Long departmentId;
     private Long serviceId;
-    private Long roomId;
 
-    private Integer lockVersion;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -47,8 +44,6 @@ public class VisitResponse {
                 .doctorId(visit.getDoctorId())
                 .departmentId(visit.getDepartmentId())
                 .serviceId(visit.getServiceId())
-                .roomId(visit.getRoomId())
-                .lockVersion(visit.getLockVersion())
                 .createdAt(visit.getCreatedAt())
                 .updatedAt(visit.getUpdatedAt())
                 .build();

@@ -71,9 +71,9 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public List<VisitResponse> listVisits(Visit.VisitStatus status, Long departmentId, LocalDate date) {
-        List<Visit> visits = visitRepository.findByStatusAndDepartmentIdAndVisitDate(
-                status, departmentId, date != null ? date : LocalDate.now()
+    public List<VisitResponse> listVisits(Visit.VisitStatus status, Long departmentId) {
+        List<Visit> visits = visitRepository.findByFilters(
+                status, departmentId
         );
         return visits.stream().map(VisitResponse::fromEntity).toList();
     }
@@ -103,20 +103,6 @@ public class VisitServiceImpl implements VisitService {
                 .orElseThrow(() -> new VisitNotFoundException("Visit not found with id " + visitId));
 
         visit.setStatus(VisitStatus.DONE);
-        visit.setUpdatedAt(LocalDateTime.now());
-
-        return VisitResponse.fromEntity(visitRepository.save(visit));
-    }
-
-    @Override
-    @Transactional
-    public VisitResponse assignDoctor(Long visitId, Long doctorId, Long roomId) {
-        Visit visit = visitRepository.findById(visitId)
-                .orElseThrow(() -> new VisitNotFoundException("Visit not found with id " + visitId));
-
-        visit.setDoctorId(doctorId);
-        visit.setRoomId(roomId);
-        visit.setStatus(Visit.VisitStatus.EXAMINING);
         visit.setUpdatedAt(LocalDateTime.now());
 
         return VisitResponse.fromEntity(visitRepository.save(visit));

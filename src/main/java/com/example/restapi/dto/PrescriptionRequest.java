@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 public class PrescriptionRequest {
 
     private Long visitId;
-    private Long doctorId;
     private String notes;
     private List<PrescriptionItemRequestDto> items;
 
