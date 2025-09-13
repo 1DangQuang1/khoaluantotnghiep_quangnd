@@ -24,8 +24,8 @@ public class ClinicalRecordService {
         return repository.save(record);
     }
 
-    public ClinicalRecord getById(Long id) {
-        return repository.findById(id
+    public ClinicalRecord getByVisitId(Long visitId) {
+        return repository.findByVisitId(visitId
         ).orElseThrow(() -> new NotFoundException("Record not found"));
     }
 
