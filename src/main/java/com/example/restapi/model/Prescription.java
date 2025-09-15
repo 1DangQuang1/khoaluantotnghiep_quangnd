@@ -34,9 +34,6 @@ public class Prescription {
     @Column(name = "visit_id", nullable = false)
     private Long visitId;
 
-    @Column(name = "doctor_id", nullable = false)
-    private Long doctorId;
-
     @Column(name = "notes")
     private String notes;
 

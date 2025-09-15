@@ -1,5 +1,7 @@
 package com.example.restapi.dto;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,12 +16,12 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PatientListResponse {
-    Long patientId;
-    String patientFullName;
-    String patientCccd;
-    String patientGender;
-    String patientAge;
-    String patientBhyt;
+    Long id;
+    String fullName;
+    String cccd;
+    String gender;
+    LocalDate birthDate;
+    String insuranceNumber;
     String phone;
     String address;
     String departmentName;

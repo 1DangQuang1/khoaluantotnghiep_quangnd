@@ -62,7 +62,6 @@ public class LabRecordController {
 
     @DeleteMapping("/{Id}")
     public ResponseEntity<Void> deleteLabResult(
-        @PathVariable Long visitId,
         @PathVariable Long Id)
         {
         boolean deleted = labResultService.deleteLabResult(Id);

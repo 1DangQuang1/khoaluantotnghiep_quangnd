@@ -176,14 +176,12 @@ public class PatientService {
     Optional<LatestVisitInfo> latestVisitOpt = patientRepository.findLatestVisitInfoByPatientId(patient.getId());
 
     PatientListResponse response = PatientListResponse.builder()
-            .patientId(patient.getId())
-            .patientFullName(patient.getFullName())
-            .patientCccd(patient.getCccd())
-            .patientGender(patient.getGender())
-            .patientAge(patient.getBirthDate() != null
-                    ? String.valueOf(Period.between(patient.getBirthDate(), LocalDate.now()).getYears())
-                    : null)
-            .patientBhyt(patient.getInsuranceNumber())
+            .id(patient.getId())
+            .fullName(patient.getFullName())
+            .cccd(patient.getCccd())
+            .gender(patient.getGender())
+            .birthDate(patient.getBirthDate())
+            .insuranceNumber(patient.getInsuranceNumber())
             .phone(patient.getPhone())
             .address(patient.getAddress())
             .build();

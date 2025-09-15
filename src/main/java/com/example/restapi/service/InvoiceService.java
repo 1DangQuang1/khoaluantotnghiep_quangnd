@@ -100,7 +100,7 @@ public class InvoiceService {
         invoice.setItems(items);
     
         visitService.updateStatus(visitId, Visit.VisitStatus.DONE);
-    
+        visitService.updateCurrentStep(visitId, Visit.VisitStep.BILLING);
         Invoice saved = invoiceRepository.saveAndFlush(invoice);
     
         // map to response
