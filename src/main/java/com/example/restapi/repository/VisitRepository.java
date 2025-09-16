@@ -19,8 +19,11 @@ public interface VisitRepository extends JpaRepository<Visit, Long> {
     SELECT v FROM Visit v
     WHERE (:status IS NULL OR v.status = :status)
       AND (:departmentId IS NULL OR v.departmentId = :departmentId)
+      AND (:patientId IS NULL OR v.patientId = :patientId)
     """)
     List<Visit> findByFilters(@Param("status") Visit.VisitStatus status,
-                            @Param("departmentId") Long departmentId);
+                            @Param("departmentId") Long departmentId,
+                            @Param("patientId") Long patientId
+                            );
 
 }

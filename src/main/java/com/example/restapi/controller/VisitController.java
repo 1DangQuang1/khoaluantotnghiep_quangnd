@@ -36,8 +36,9 @@ public class VisitController {
     @GetMapping
     public ResponseEntity<List<VisitResponse>> listVisits(
             @RequestParam(required = false) Visit.VisitStatus status,
-            @RequestParam(required = false) Long departmentId) {
-return ResponseEntity.ok(visitService.listVisits(status, departmentId));
+            @RequestParam(required = false) Long departmentId,
+            @RequestParam(required = false) Long patientId) {
+        return ResponseEntity.ok(visitService.listVisits(status, departmentId, patientId));
     }
 
     @GetMapping("/{visitId}")

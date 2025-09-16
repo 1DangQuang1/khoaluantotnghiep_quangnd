@@ -11,7 +11,7 @@ import com.example.restapi.model.Visit;
 @Service
 public interface VisitService {
     VisitResponse createVisit(VisitRequest request);
-    List<VisitResponse> listVisits(Visit.VisitStatus status, Long departmentId);
+    List<VisitResponse> listVisits(Visit.VisitStatus status, Long departmentId, Long patientId);
     VisitResponse getVisit(Long visitId);
     VisitResponse updateStatus(Long visitId, Visit.VisitStatus newStatus);
     VisitResponse updateCurrentStep(Long visitId, Visit.VisitStep newStep);
