@@ -72,9 +72,9 @@ public class VisitServiceImpl implements VisitService {
     }
 
     @Override
-    public List<VisitResponse> listVisits(Visit.VisitStatus status, Long departmentId) {
+    public List<VisitResponse> listVisits(Visit.VisitStatus status, Long departmentId, Long patientId) {
         List<Visit> visits = visitRepository.findByFilters(
-                status, departmentId
+                status, departmentId, patientId
         );
         return visits.stream().map(VisitResponse::fromEntity).toList();
     }
