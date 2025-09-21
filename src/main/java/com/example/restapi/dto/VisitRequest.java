@@ -19,5 +19,6 @@ public class VisitRequest {
     @NotNull(message = "Shift is required")
     private Integer shift;
 
+    @NotNull(message = "Doctor ID is required")
     private Long doctorId;
 }

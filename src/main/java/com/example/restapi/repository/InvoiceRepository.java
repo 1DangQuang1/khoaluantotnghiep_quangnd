@@ -12,4 +12,10 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     Long getMaxId();
 
     Optional<Invoice> findByVisitId(Long visitId);
+
+    @Query("Select sum(totalAmount) from Invoice i ")
+    Double getTotalRevenue();
+
+    @Query("Select sum(totalAmount) from Invoice i where i.createdAt = CURRENT_DATE")
+    Double getTodayRevenue();
 }
